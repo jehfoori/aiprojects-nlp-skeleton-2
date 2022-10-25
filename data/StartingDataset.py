@@ -2,23 +2,25 @@ import torch
 import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
-
+import nltk
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+import string
 
 class StartingDataset(torch.utils.data.Dataset):
     """
-    Bag of Words Dataset
+    Dataset
     """
 
-    # TODO: dataset constructor.
     def __init__(self, data_path="/Users/Terru/Desktop/UCLA/ACM AI/Projects/train.csv"):
         '''
         data_path (str): path for the csv file that contains the data that you want to use
         '''
 
-        # Preprocess the data. These are just library function calls so it's here for you
+        # Import data
         self.df = pd.read_csv(data_path)
 
-        # Embeddings
+        # Generates embeddings
         self.words = []
         self.word2idx = {}
         self.embedding = {}
@@ -32,20 +34,35 @@ class StartingDataset(torch.utils.data.Dataset):
                 self.embedding[word] = vector
                 self.words.append(word)
 
-    # TODO: return an instance from the dataset
+        # TO-DO: possibly stem embeddings!
+
+    # Returns an instance from the dataset
     def __getitem__(self, i):
         '''
         i (int): the desired instance of the dataset
         '''
-        # return the ith sample's list of word counts and label
-        return self.sequences[i, :].toarray(), self.labels[i]
+        # return the ith sample's list of embeddings for each word and label
 
-    # TODO: return the size of the dataset
+        text = self.df.iloc[i, 1]
+
+        # basic preprocessing——case, removing punctuation
+        text = text.lower().split()
+        text = [word.translate(str.maketrans('', '', string.punctuation)) for word in text]
+
+        # lemmatizing
+        lemma = WordNetLemmatizer()
+        text = [lemma.lemmatize(word) for word in text if word not in set(stopwords.words('english'))]
+        embeddings = [self.embedding[i] for i in text]
+        return embeddings, self.df.iloc[i, 2]
+
+    # Returns the size of the dataset
     def __len__(self):
-        return self.sequences.shape[0]
+        return len(self.df)
 
 
 data = StartingDataset()
 print(data.df.head())
-print(len(data.df))
-print(data.embedding["the"])
+print(len(data))
+print(data[26])
+
+# print(data.embedding["the"])
