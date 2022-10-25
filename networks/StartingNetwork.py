@@ -1,25 +1,27 @@
 import torch
 import torch.nn as nn
-
+import torch.nn.functional as F
 
 class StartingNetwork(torch.nn.Module):
     """
-    Basic logistic regression example. You may need to double check the dimensions :)
+    Network
     """
 
-    def __init__(self):
+    def __init__(self, embedding_dim, hidden_dim, vocab_size, output_size, num_layers):
         super().__init__()
-        self.fc1 = nn.Linear(12122002, 50) # What could that number mean!?!?!? Ask an officer to find out :)
-        self.fc2 = nn.Linear(50, 10)
-        self.sigmoid = nn.Sigmoid()
 
-    def forward(self, x):
-        '''
-        x (tensor): the input to the model
-        '''
-        x = self.fc1(x)
-        x = self.fc2(x)
-        x = self.sigmoid(x)
-        return x
+        self.hidden_dim = hidden_dim
+        self.num_layers = num_layers
 
+        # LSTM taking word embeddings as inputs and outputting hidden states
+        # with dimensionality hidden_dim.
+        self.lstm = nn.LSTM(embedding_dim, hidden_dim, num_layers, bidirectional=True)
+        # optional: dropout
 
+        # Linear layer maps from hidden state space to output space
+        self.fc = nn.Linear(hidden_dim, output_size)
+
+    def forward(self, x, prev_state):
+        output, state = self.lstm(x, prev_state)
+        logits = self.fc(output)
+        return F.sigmoid(logits), state
