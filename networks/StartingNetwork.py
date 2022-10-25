@@ -10,7 +10,10 @@ class StartingNetwork(torch.nn.Module):
     def __init__(self, embedding_dim, hidden_dim, vocab_size, output_size, num_layers):
         super().__init__()
 
+        self.embedding_dim = embedding_dim
         self.hidden_dim = hidden_dim
+        self.vocab_size = vocab_size
+        self.output_size = output_size
         self.num_layers = num_layers
 
         # LSTM taking word embeddings as inputs and outputting hidden states
