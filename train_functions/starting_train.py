@@ -3,11 +3,12 @@ import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
 
+from StartingDataset import StartingDataset
+from StartingNetwork import StartingNetwork
 
 def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
     """
     Trains and evaluates a model.
-
     Args:
         train_dataset:   PyTorch dataset containing training data.
         val_dataset:     PyTorch dataset containing validation data.
@@ -28,8 +29,8 @@ def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
     )
 
     # Initalize optimizer (for gradient descent) and loss function
-    optimizer = optim.Adam(model.parameters())
-    loss_fn = nn.CrossEntropyLoss()
+    optimizer = optim.AdamW(model.parameters())
+    loss_fn = nn.BCELoss()
 
     step = 0
     for epoch in range(epochs):
@@ -49,7 +50,7 @@ def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
 
                 # TODO:
                 # Compute validation loss and accuracy.
-                # Log the results to Tensorboard. 
+                # Log the results to Tensorboard.
                 # Don't forget to turn off gradient calculations!
                 evaluate(val_loader, model, loss_fn)
 
@@ -61,11 +62,9 @@ def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
 def compute_accuracy(outputs, labels):
     """
     Computes the accuracy of a model's predictions.
-
     Example input:
         outputs: [0.7, 0.9, 0.3, 0.2]
         labels:  [1, 1, 0, 1]
-
     Example output:
         0.75
     """
@@ -78,7 +77,6 @@ def compute_accuracy(outputs, labels):
 def evaluate(val_loader, model, loss_fn):
     """
     Computes the loss and accuracy of a model on the validation dataset.
-
     TODO!
     """
     pass
