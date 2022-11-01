@@ -6,6 +6,12 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 import string
+
+# method used to import constants
+import sys
+import os
+
+sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import constants
 
 class StartingDataset(torch.utils.data.Dataset):
@@ -54,6 +60,10 @@ class StartingDataset(torch.utils.data.Dataset):
         lemma = WordNetLemmatizer()
         text = [lemma.lemmatize(word) for word in text if word not in set(stopwords.words('english'))]
         embeddings = [self.embedding[i] for i in text[:constants.MAX_SENT_LENGTH] if i in self.embedding]
+        if len(embeddings) < constants.MAX_SENT_LENGTH:
+            add = [np.zeros(300) for i in range(constants.MAX_SENT_LENGTHlen(embeddings))]
+            embeddings.extend(add)
+
         return embeddings, self.df.iloc[i, 2]
 
     # Returns the size of the dataset
@@ -62,6 +72,8 @@ class StartingDataset(torch.utils.data.Dataset):
 
 
 # data = StartingDataset()
-# print(data.df.head())
-# print(len(data))
-# print(data.embedding["the"])
+# # print(data.df.head())
+# # print(len(data))
+# # print(data.embedding["the"])
+# print(data[2])
+# print(len(data[2][0]))
