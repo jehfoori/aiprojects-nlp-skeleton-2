@@ -59,6 +59,10 @@ class StartingDataset(torch.utils.data.Dataset):
         # lemmatizing
         lemma = WordNetLemmatizer()
         text = [lemma.lemmatize(word) for word in text if word not in set(stopwords.words('english'))]
+
+        # TO-DO: Using a map/dict to remove contractions?
+
+        # Generating embeddings
         embeddings = [self.embedding[i] for i in text[:constants.MAX_SENT_LENGTH] if i in self.embedding]
         if len(embeddings) < constants.MAX_SENT_LENGTH:
             add = [np.zeros(300) for i in range(constants.MAX_SENT_LENGTHlen(embeddings))]

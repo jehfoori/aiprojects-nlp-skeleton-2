@@ -2,9 +2,9 @@ import os
 import torch
 
 import constants
-from StartingDataset import StartingDataset
-from StartingNetwork import StartingNetwork
-from starting_train import starting_train
+from data.StartingDataset import StartingDataset
+from networks.StartingNetwork import StartingNetwork
+from train_functions.starting_train import starting_train
 
 # CURRENTLY——we are indeed getting KeyErrors. such as "Bitsat", not in the glove vocabulary.
 # Birla Institute of Technology & Science Admission Test (BITSAT)
@@ -37,6 +37,7 @@ def main():
         model=model,
         hyperparameters=hyperparameters,
         n_eval=constants.N_EVAL,
+        device=device,
     )
 
 if __name__ == "__main__":

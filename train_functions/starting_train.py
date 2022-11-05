@@ -2,11 +2,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
+from torch.utils.tensorboard import SummaryWriter
 
-from StartingDataset import StartingDataset
-from StartingNetwork import StartingNetwork
-
-def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
+def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval, device):
     """
     Trains and evaluates a model.
     Args:
@@ -33,18 +31,32 @@ def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
     loss_fn = nn.BCELoss()
 
     step = 0
+    writer = SummaryWriter() # tensorboard
     for epoch in range(epochs):
         print(f"Epoch {epoch + 1} of {epochs}")
 
         # Loop over each batch in the dataset
         for batch in tqdm(train_loader):
+
+            texts, labels = batch
+
+            # Move to GPU if available
+            texts = texts.to(device)
+            labels = labels.to(device)
+
             # TODO: Forward propagate
+            outputs = model(texts)
 
             # TODO: Backpropagation and gradient descent
+            loss = loss_fn(outputs, labels)
 
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
             # Periodically evaluate our model + log to Tensorboard
-            if step % n_eval == 0:
+            if step % n_eval == 0 and step > 0:
                 # TODO:
+                writer.add_scalar("Training loss: ", loss.item(), epoch+1)
                 # Compute training loss and accuracy.
                 # Log the results to Tensorboard.
 
@@ -52,11 +64,16 @@ def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
                 # Compute validation loss and accuracy.
                 # Log the results to Tensorboard.
                 # Don't forget to turn off gradient calculations!
-                evaluate(val_loader, model, loss_fn)
+                writer.add_scalar("Validation accuracy: ", evaluate(val_loader, model, loss_fn, device), epoch+1)
+                # NOT DONE. ^ depending on what our evaluate() function actually returns we may need to subset it
+                # such as [0]
+                evaluate(val_loader, model, loss_fn, device) # testing it here
 
+            writer.flush() # sends output
             step += 1
 
-        print()
+        print("Epoch: ", epoch+1, "Loss: ", loss.item()) # displays loss of last batch for every epoch
+    writer.close()
 
 
 def compute_accuracy(outputs, labels):
@@ -74,9 +91,22 @@ def compute_accuracy(outputs, labels):
     return n_correct / n_total
 
 
-def evaluate(val_loader, model, loss_fn):
+def evaluate(val_loader, model, loss_fn, device):
     """
     Computes the loss and accuracy of a model on the validation dataset.
     TODO!
     """
+    model.eval()
+
+    model = model.to(device)
+
+    correct = 0
+    total = 0
+    for batch in val_loader:
+        texts, labels = batch
+
+        # pass to GPU if available
+        texts = texts.to(device)
+        labels = labels.to(device)
+    print("\n Accuracy: ", 100*(correct/total), "%")
     pass
