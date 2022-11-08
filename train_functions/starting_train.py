@@ -48,7 +48,11 @@ def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval, d
             labels = labels.to(device)
 
             # TODO: Forward propagate
+<<<<<<< HEAD
             outputs = model(texts.float())
+=======
+            outputs = model(texts)
+>>>>>>> refs/remotes/origin/master
 
             # TODO: Backpropagation and gradient descent
             loss = loss_fn(outputs, labels)
@@ -77,6 +81,10 @@ def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval, d
 
         print("Epoch: ", epoch+1, "Loss: ", loss.item()) # displays loss of last batch for every epoch
     writer.close()
+<<<<<<< HEAD
+=======
+
+>>>>>>> refs/remotes/origin/master
 
 
 # def compute_accuracy(outputs, labels):
@@ -111,6 +119,7 @@ def evaluate(val_loader, model, loss_fn, device):
         # pass to GPU if available
         texts = texts.to(device)
         labels = labels.to(device)
+<<<<<<< HEAD
 
         # classical accuracy:
         predictions = model(texts).argmax(axis=1)
@@ -122,4 +131,7 @@ def evaluate(val_loader, model, loss_fn, device):
     # TO-DO: calculate ROC accuracy. or separate accuracies for sincere and insincere.
     # sk_learn roc_curve
     # further: try all types like F-1 score and look for anomalies/things to note
+=======
+    print("\n Accuracy: ", 100*(correct/total), "%")
+>>>>>>> refs/remotes/origin/master
     pass
