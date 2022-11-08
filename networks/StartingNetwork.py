@@ -21,10 +21,14 @@ class StartingNetwork(torch.nn.Module):
         self.lstm = nn.LSTM(embedding_dim, hidden_dim, num_layers, bidirectional=True)
         # optional: dropout
 
+        self.linear = nn.Linear(self.hidden_dim*4, 64)
         # Linear layer maps from hidden state space to output space
-        self.fc = nn.Linear(hidden_dim, output_size)
+        self.fc = nn.Linear(64, output_size)
 
-    def forward(self, x, prev_state):
-        output, state = self.lstm(x, prev_state)
-        logits = self.fc(output)
-        return F.sigmoid(logits), state
+        self.dropout = nn.Dropout(0.1)
+
+    def forward(self, x):
+        output, _ = self.lstm(x)
+        intermed = self.dropout(F.sigmoid(self.linear(output)))
+        logits = self.fc(intermed)
+        return logits
